@@ -45,7 +45,6 @@ const categoryAccents: Record<string, string> = {
 };
 
 export default function HomePage() {
-  // ── Theme ──────────────────────────────────────────────────────────────
   const [isDark, setIsDark] = useState(true);
   useEffect(() => {
     document.documentElement.setAttribute(
@@ -54,7 +53,6 @@ export default function HomePage() {
     );
   }, [isDark]);
 
-  // ── Auth ───────────────────────────────────────────────────────────────
   const [user, setUser] = useState<AuthUser | null>(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
@@ -94,16 +92,10 @@ export default function HomePage() {
     setLikedIds(new Set());
   };
 
-  // ── Navigation ─────────────────────────────────────────────────────────
   const [activeNav, setActiveNav] = useState("home");
-
-  // ── Book filters ───────────────────────────────────────────────────────
   const [activeFilter, setActiveFilter] = useState<"All" | Category>("All");
   const [searchQuery, setSearchQuery] = useState("");
-
-  // ── Case study filters ─────────────────────────────────────────────────
-  const [activeCsFilter, setActiveCsFilter] =
-    useState<CaseStudyCategory>("All");
+  const [activeCsFilter, setActiveCsFilter] = useState<CaseStudyCategory>("All");
 
   const featured = getFeaturedBooks();
 
@@ -145,43 +137,29 @@ export default function HomePage() {
   if (activeNav === "saved") {
     const savedBooks = books.filter((b) => savedIds.has(b.id));
     const likedBooks = books.filter((b) => likedIds.has(b.id));
+    const savedStudies = caseStudies.filter((s) => savedIds.has(s.id));
+    const likedStudies = caseStudies.filter((s) => likedIds.has(s.id));
 
     return (
-      <div
-        className="flex h-screen overflow-hidden"
-        style={{ background: "var(--page-bg)" }}
-      >
+      <div className="flex h-screen overflow-hidden" style={{ background: "var(--page-bg)" }}>
         <Sidebar activeNav={activeNav} onNavChange={setActiveNav} />
         <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
           <header
             className="flex-shrink-0 px-6 py-4 flex items-center justify-between"
-            style={{
-              background: "var(--nav-bg)",
-              borderBottom: "1px solid var(--card-border)",
-            }}
+            style={{ background: "var(--nav-bg)", borderBottom: "1px solid var(--card-border)" }}
           >
             <div>
-              <h1
-                className="text-xl font-bold"
-                style={{ color: "var(--text-primary)" }}
-              >
+              <h1 className="text-xl font-bold" style={{ color: "var(--text-primary)" }}>
                 My Library
               </h1>
-              <p
-                className="text-xs mt-0.5"
-                style={{ color: "var(--text-muted)" }}
-              >
-                {savedBooks.length} saved · {likedBooks.length} liked
+              <p className="text-xs mt-0.5" style={{ color: "var(--text-muted)" }}>
+                {savedBooks.length + savedStudies.length} saved · {likedBooks.length + likedStudies.length} liked
               </p>
             </div>
             <button
               onClick={() => setIsDark(!isDark)}
               className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium"
-              style={{
-                background: "var(--brand-soft)",
-                border: "1px solid rgba(243,18,60,0.2)",
-                color: "var(--brand-primary)",
-              }}
+              style={{ background: "var(--brand-soft)", border: "1px solid rgba(243,18,60,0.2)", color: "var(--brand-primary)" }}
             >
               {isDark ? "☀️ Light" : "🌙 Dark"}
             </button>
@@ -191,10 +169,7 @@ export default function HomePage() {
             {!user ? (
               <div className="flex flex-col items-center justify-center py-20">
                 <Bookmark size={40} style={{ color: "var(--text-faint)" }} />
-                <p
-                  className="text-base font-semibold mt-4"
-                  style={{ color: "var(--text-muted)" }}
-                >
+                <p className="text-base font-semibold mt-4" style={{ color: "var(--text-muted)" }}>
                   Sign in to see your library
                 </p>
                 <button
@@ -207,33 +182,19 @@ export default function HomePage() {
               </div>
             ) : (
               <>
-                {/* Saved */}
+                {/* Saved Books */}
                 <div className="mb-8">
                   <div className="flex items-center gap-2 mb-4">
-                    <div
-                      className="w-1 h-5 rounded-full"
-                      style={{ background: "var(--brand-primary)" }}
-                    />
-                    <h2
-                      className="text-base font-semibold"
-                      style={{ color: "var(--text-primary)" }}
-                    >
-                      Saved for Later
+                    <div className="w-1 h-5 rounded-full" style={{ background: "var(--brand-primary)" }} />
+                    <h2 className="text-base font-semibold" style={{ color: "var(--text-primary)" }}>
+                      Saved Books
                     </h2>
-                    <span
-                      className="text-xs px-2 py-0.5 rounded-full"
-                      style={{
-                        background: "var(--brand-soft)",
-                        color: "var(--brand-primary)",
-                      }}
-                    >
+                    <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: "var(--brand-soft)", color: "var(--brand-primary)" }}>
                       {savedBooks.length}
                     </span>
                   </div>
                   {savedBooks.length === 0 ? (
-                    <p className="text-sm" style={{ color: "var(--text-faint)" }}>
-                      No saved books yet. Hit Save on any book!
-                    </p>
+                    <p className="text-sm" style={{ color: "var(--text-faint)" }}>No saved books yet.</p>
                   ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                       {savedBooks.map((book) => (
@@ -241,7 +202,7 @@ export default function HomePage() {
                           <ResourceCard book={book} variant="list" />
                           <div className="mt-2">
                             <SaveButton
-                              book={book}
+                              resource={book}
                               isLoggedIn={!!user}
                               initialSaved={savedIds.has(book.id)}
                               initialLiked={likedIds.has(book.id)}
@@ -256,33 +217,50 @@ export default function HomePage() {
 
                 <div className="section-divider my-6" />
 
-                {/* Liked */}
-                <div>
+                {/* Saved Case Studies */}
+                <div className="mb-8">
                   <div className="flex items-center gap-2 mb-4">
-                    <div
-                      className="w-1 h-5 rounded-full"
-                      style={{ background: "var(--brand-primary)" }}
-                    />
-                    <h2
-                      className="text-base font-semibold"
-                      style={{ color: "var(--text-primary)" }}
-                    >
-                      Liked
+                    <div className="w-1 h-5 rounded-full" style={{ background: "var(--brand-primary)" }} />
+                    <h2 className="text-base font-semibold" style={{ color: "var(--text-primary)" }}>
+                      Saved Case Studies
                     </h2>
-                    <span
-                      className="text-xs px-2 py-0.5 rounded-full"
-                      style={{
-                        background: "var(--brand-soft)",
-                        color: "var(--brand-primary)",
-                      }}
-                    >
+                    <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: "var(--brand-soft)", color: "var(--brand-primary)" }}>
+                      {savedStudies.length}
+                    </span>
+                  </div>
+                  {savedStudies.length === 0 ? (
+                    <p className="text-sm" style={{ color: "var(--text-faint)" }}>No saved case studies yet.</p>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {savedStudies.map((study) => (
+                        <CaseStudyCard
+                          key={study.id}
+                          study={study}
+                          isLoggedIn={!!user}
+                          initialSaved={savedIds.has(study.id)}
+                          initialLiked={likedIds.has(study.id)}
+                          onAuthRequired={() => setShowAuthModal(true)}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <div className="section-divider my-6" />
+
+                {/* Liked Books */}
+                <div className="mb-8">
+                  <div className="flex items-center gap-2 mb-4">
+                    <div className="w-1 h-5 rounded-full" style={{ background: "var(--brand-primary)" }} />
+                    <h2 className="text-base font-semibold" style={{ color: "var(--text-primary)" }}>
+                      Liked Books
+                    </h2>
+                    <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: "var(--brand-soft)", color: "var(--brand-primary)" }}>
                       {likedBooks.length}
                     </span>
                   </div>
                   {likedBooks.length === 0 ? (
-                    <p className="text-sm" style={{ color: "var(--text-faint)" }}>
-                      No liked books yet. Hit Like on any book!
-                    </p>
+                    <p className="text-sm" style={{ color: "var(--text-faint)" }}>No liked books yet.</p>
                   ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                       {likedBooks.map((book) => (
@@ -290,7 +268,7 @@ export default function HomePage() {
                           <ResourceCard book={book} variant="list" />
                           <div className="mt-2">
                             <SaveButton
-                              book={book}
+                              resource={book}
                               isLoggedIn={!!user}
                               initialSaved={savedIds.has(book.id)}
                               initialLiked={likedIds.has(book.id)}
@@ -302,16 +280,44 @@ export default function HomePage() {
                     </div>
                   )}
                 </div>
+
+                <div className="section-divider my-6" />
+
+                {/* Liked Case Studies */}
+                <div>
+                  <div className="flex items-center gap-2 mb-4">
+                    <div className="w-1 h-5 rounded-full" style={{ background: "var(--brand-primary)" }} />
+                    <h2 className="text-base font-semibold" style={{ color: "var(--text-primary)" }}>
+                      Liked Case Studies
+                    </h2>
+                    <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: "var(--brand-soft)", color: "var(--brand-primary)" }}>
+                      {likedStudies.length}
+                    </span>
+                  </div>
+                  {likedStudies.length === 0 ? (
+                    <p className="text-sm" style={{ color: "var(--text-faint)" }}>No liked case studies yet.</p>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {likedStudies.map((study) => (
+                        <CaseStudyCard
+                          key={study.id}
+                          study={study}
+                          isLoggedIn={!!user}
+                          initialSaved={savedIds.has(study.id)}
+                          initialLiked={likedIds.has(study.id)}
+                          onAuthRequired={() => setShowAuthModal(true)}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
               </>
             )}
           </main>
         </div>
 
         {showAuthModal && (
-          <AuthModal
-            onClose={() => setShowAuthModal(false)}
-            onSuccess={(u) => setUser(u)}
-          />
+          <AuthModal onClose={() => setShowAuthModal(false)} onSuccess={(u) => setUser(u)} />
         )}
       </div>
     );
@@ -320,41 +326,25 @@ export default function HomePage() {
   // ── Case Studies View ──────────────────────────────────────────────────
   if (activeNav === "casestudies") {
     return (
-      <div
-        className="flex h-screen overflow-hidden"
-        style={{ background: "var(--page-bg)" }}
-      >
+      <div className="flex h-screen overflow-hidden" style={{ background: "var(--page-bg)" }}>
         <Sidebar activeNav={activeNav} onNavChange={setActiveNav} />
         <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
           <header
             className="flex-shrink-0 px-6 py-4 flex items-center justify-between"
-            style={{
-              background: "var(--nav-bg)",
-              borderBottom: "1px solid var(--card-border)",
-            }}
+            style={{ background: "var(--nav-bg)", borderBottom: "1px solid var(--card-border)" }}
           >
             <div>
-              <h1
-                className="text-xl font-bold"
-                style={{ color: "var(--text-primary)" }}
-              >
+              <h1 className="text-xl font-bold" style={{ color: "var(--text-primary)" }}>
                 Case Studies
               </h1>
-              <p
-                className="text-xs mt-0.5"
-                style={{ color: "var(--text-muted)" }}
-              >
+              <p className="text-xs mt-0.5" style={{ color: "var(--text-muted)" }}>
                 50 real stories — product wins, growth hacks, and failures
               </p>
             </div>
             <button
               onClick={() => setIsDark(!isDark)}
               className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium"
-              style={{
-                background: "var(--brand-soft)",
-                border: "1px solid rgba(243,18,60,0.2)",
-                color: "var(--brand-primary)",
-              }}
+              style={{ background: "var(--brand-soft)", border: "1px solid rgba(243,18,60,0.2)", color: "var(--brand-primary)" }}
             >
               {isDark ? "☀️ Light" : "🌙 Dark"}
             </button>
@@ -368,95 +358,41 @@ export default function HomePage() {
                   onClick={() => setActiveCsFilter(cat as CaseStudyCategory)}
                   className="rounded-xl p-3 text-left transition-all"
                   style={{
-                    background:
-                      activeCsFilter === cat
-                        ? "var(--brand-soft)"
-                        : "var(--card-bg)",
-                    border: `1px solid ${
-                      activeCsFilter === cat
-                        ? "rgba(243,18,60,0.3)"
-                        : "var(--card-border)"
-                    }`,
+                    background: activeCsFilter === cat ? "var(--brand-soft)" : "var(--card-bg)",
+                    border: `1px solid ${activeCsFilter === cat ? "rgba(243,18,60,0.3)" : "var(--card-border)"}`,
                   }}
                 >
-                  <div
-                    className="text-xl font-bold"
-                    style={{ color: "var(--brand-primary)" }}
-                  >
-                    {count}
-                  </div>
-                  <div
-                    className="text-xs mt-0.5"
-                    style={{ color: "var(--text-muted)" }}
-                  >
-                    {cat}
-                  </div>
+                  <div className="text-xl font-bold" style={{ color: "var(--brand-primary)" }}>{count}</div>
+                  <div className="text-xs mt-0.5" style={{ color: "var(--text-muted)" }}>{cat}</div>
                 </button>
               ))}
               <button
                 onClick={() => setActiveCsFilter("All")}
                 className="rounded-xl p-3 text-left transition-all"
                 style={{
-                  background:
-                    activeCsFilter === "All"
-                      ? "var(--brand-soft)"
-                      : "var(--card-bg)",
-                  border: `1px solid ${
-                    activeCsFilter === "All"
-                      ? "rgba(243,18,60,0.3)"
-                      : "var(--card-border)"
-                  }`,
+                  background: activeCsFilter === "All" ? "var(--brand-soft)" : "var(--card-bg)",
+                  border: `1px solid ${activeCsFilter === "All" ? "rgba(243,18,60,0.3)" : "var(--card-border)"}`,
                 }}
               >
-                <div
-                  className="text-xl font-bold"
-                  style={{ color: "var(--brand-primary)" }}
-                >
-                  50
-                </div>
-                <div
-                  className="text-xs mt-0.5"
-                  style={{ color: "var(--text-muted)" }}
-                >
-                  All
-                </div>
+                <div className="text-xl font-bold" style={{ color: "var(--brand-primary)" }}>50</div>
+                <div className="text-xs mt-0.5" style={{ color: "var(--text-muted)" }}>All</div>
               </button>
             </div>
 
             <div className="flex items-center gap-3 mb-5">
-              <div
-                className="w-1 h-5 rounded-full"
-                style={{ background: "var(--brand-primary)" }}
-              />
-              <h2
-                className="text-base font-semibold"
-                style={{ color: "var(--text-primary)" }}
-              >
-                {activeCsFilter === "All"
-                  ? "All Case Studies"
-                  : `${activeCsFilter} Case Studies`}
+              <div className="w-1 h-5 rounded-full" style={{ background: "var(--brand-primary)" }} />
+              <h2 className="text-base font-semibold" style={{ color: "var(--text-primary)" }}>
+                {activeCsFilter === "All" ? "All Case Studies" : `${activeCsFilter} Case Studies`}
               </h2>
-              <span
-                className="text-xs px-2 py-0.5 rounded-full"
-                style={{
-                  background: "var(--brand-soft)",
-                  color: "var(--brand-primary)",
-                }}
-              >
+              <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: "var(--brand-soft)", color: "var(--brand-primary)" }}>
                 {filteredCaseStudies.length}
               </span>
               <div className="ml-auto flex items-center gap-4">
-                <span
-                  className="flex items-center gap-1 text-xs"
-                  style={{ color: "var(--success)" }}
-                >
+                <span className="flex items-center gap-1 text-xs" style={{ color: "var(--success)" }}>
                   <TrendingUp size={12} />
                   {filteredCaseStudies.filter((c) => c.category !== "Failure").length} wins
                 </span>
-                <span
-                  className="flex items-center gap-1 text-xs"
-                  style={{ color: "var(--danger)" }}
-                >
+                <span className="flex items-center gap-1 text-xs" style={{ color: "var(--danger)" }}>
                   <TrendingDown size={12} />
                   {filteredCaseStudies.filter((c) => c.category === "Failure").length} failures
                 </span>
@@ -465,21 +401,29 @@ export default function HomePage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
               {filteredCaseStudies.map((study) => (
-                <CaseStudyCard key={study.id} study={study} />
+                <CaseStudyCard
+                  key={study.id}
+                  study={study}
+                  isLoggedIn={!!user}
+                  initialSaved={savedIds.has(study.id)}
+                  initialLiked={likedIds.has(study.id)}
+                  onAuthRequired={() => setShowAuthModal(true)}
+                />
               ))}
             </div>
           </main>
         </div>
+
+        {showAuthModal && (
+          <AuthModal onClose={() => setShowAuthModal(false)} onSuccess={(u) => setUser(u)} />
+        )}
       </div>
     );
   }
 
   // ── Main Home View ─────────────────────────────────────────────────────
   return (
-    <div
-      className="flex h-screen overflow-hidden"
-      style={{ background: "var(--page-bg)" }}
-    >
+    <div className="flex h-screen overflow-hidden" style={{ background: "var(--page-bg)" }}>
       <Sidebar activeNav={activeNav} onNavChange={setActiveNav} />
 
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
@@ -495,26 +439,17 @@ export default function HomePage() {
         {/* User bar */}
         <div
           className="flex items-center justify-between px-6 py-2"
-          style={{
-            borderBottom: "1px solid var(--card-border)",
-            background: "var(--nav-bg)",
-          }}
+          style={{ borderBottom: "1px solid var(--card-border)", background: "var(--nav-bg)" }}
         >
           <p className="text-xs" style={{ color: "var(--text-muted)" }}>
-            {user
-              ? `Welcome back, ${user.name} 👋`
-              : "Sign in to save and like resources"}
+            {user ? `Welcome back, ${user.name} 👋` : "Sign in to save and like resources"}
           </p>
           {user ? (
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setActiveNav("saved")}
                 className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg"
-                style={{
-                  background: "var(--brand-soft)",
-                  color: "var(--brand-primary)",
-                  border: "1px solid rgba(243,18,60,0.2)",
-                }}
+                style={{ background: "var(--brand-soft)", color: "var(--brand-primary)", border: "1px solid rgba(243,18,60,0.2)" }}
               >
                 <Bookmark size={11} />
                 {savedIds.size} Saved
@@ -522,11 +457,7 @@ export default function HomePage() {
               <button
                 onClick={() => setActiveNav("saved")}
                 className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg"
-                style={{
-                  background: "var(--brand-soft)",
-                  color: "var(--brand-primary)",
-                  border: "1px solid rgba(243,18,60,0.2)",
-                }}
+                style={{ background: "var(--brand-soft)", color: "var(--brand-primary)", border: "1px solid rgba(243,18,60,0.2)" }}
               >
                 <Heart size={11} />
                 {likedIds.size} Liked
@@ -534,11 +465,7 @@ export default function HomePage() {
               <button
                 onClick={handleLogout}
                 className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg"
-                style={{
-                  background: "var(--tag-bg)",
-                  color: "var(--text-muted)",
-                  border: "1px solid var(--card-border)",
-                }}
+                style={{ background: "var(--tag-bg)", color: "var(--text-muted)", border: "1px solid var(--card-border)" }}
               >
                 <LogOut size={11} />
                 Log Out
@@ -559,8 +486,7 @@ export default function HomePage() {
         <main className="flex-1 overflow-y-auto scroll-container">
           {!isFiltered ? (
             <div className="pb-12">
-              {/* Hero */}
-              {heroBook && <HeroBanner onNavChange={() => setActiveNav("casestudies")} />}
+              {heroBook && <HeroBanner onNavChange={setActiveNav} />}
 
               {/* Stats Strip */}
               <div className="flex gap-4 mx-6 mt-4 mb-6">
@@ -572,53 +498,30 @@ export default function HomePage() {
                   <div
                     key={label}
                     className="flex-1 flex items-center gap-3 p-3 rounded-xl cursor-pointer"
-                    style={{
-                      background: "var(--card-bg)",
-                      border: "1px solid var(--card-border)",
-                    }}
+                    style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)" }}
                     onClick={() => nav && setActiveNav(nav)}
-                    onMouseEnter={(e) =>
-                      ((e.currentTarget as HTMLDivElement).style.borderColor =
-                        "var(--brand-primary)")
-                    }
-                    onMouseLeave={(e) =>
-                      ((e.currentTarget as HTMLDivElement).style.borderColor =
-                        "var(--card-border)")
-                    }
+                    onMouseEnter={(e) => ((e.currentTarget as HTMLDivElement).style.borderColor = "var(--brand-primary)")}
+                    onMouseLeave={(e) => ((e.currentTarget as HTMLDivElement).style.borderColor = "var(--card-border)")}
                   >
-                    <div
-                      className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
-                      style={{ background: "var(--brand-soft)" }}
-                    >
+                    <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "var(--brand-soft)" }}>
                       <Icon size={16} style={{ color: "var(--brand-primary)" }} />
                     </div>
                     <div>
-                      <div
-                        className="text-lg font-bold"
-                        style={{ color: "var(--text-primary)" }}
-                      >
-                        {value}
-                      </div>
-                      <div className="text-xs" style={{ color: "var(--text-muted)" }}>
-                        {label}
-                      </div>
+                      <div className="text-lg font-bold" style={{ color: "var(--text-primary)" }}>{value}</div>
+                      <div className="text-xs" style={{ color: "var(--text-muted)" }}>{label}</div>
                     </div>
                   </div>
                 ))}
               </div>
 
               {/* Featured Row */}
-              <SectionRow
-                title="Latest Picks"
-                subtitle="Hand-curated for product leaders"
-                accentColor="var(--brand-primary)"
-              >
+              <SectionRow title="Latest Picks" subtitle="Hand-curated for product leaders" accentColor="var(--brand-primary)">
                 {featured.map((book) => (
                   <div key={book.id} style={{ scrollSnapAlign: "start" }}>
                     <ResourceCard book={book} variant="featured" />
                     <div className="mt-2 px-1">
                       <SaveButton
-                        book={book}
+                        resource={book}
                         isLoggedIn={!!user}
                         initialSaved={savedIds.has(book.id)}
                         initialLiked={likedIds.has(book.id)}
@@ -636,17 +539,13 @@ export default function HomePage() {
                 const catBooks = books.filter((b) => b.category === cat);
                 return (
                   <div key={cat} className="mt-8">
-                    <SectionRow
-                      title={cat}
-                      subtitle={`${catBooks.length} essential books`}
-                      accentColor={categoryAccents[cat]}
-                    >
+                    <SectionRow title={cat} subtitle={`${catBooks.length} essential books`} accentColor={categoryAccents[cat]}>
                       {catBooks.map((book) => (
                         <div key={book.id} style={{ scrollSnapAlign: "start" }}>
                           <ResourceCard book={book} variant="default" />
                           <div className="mt-2 px-1">
                             <SaveButton
-                              book={book}
+                              resource={book}
                               isLoggedIn={!!user}
                               initialSaved={savedIds.has(book.id)}
                               initialLiked={likedIds.has(book.id)}
@@ -665,25 +564,9 @@ export default function HomePage() {
               <div className="px-6 mt-8 mb-8">
                 <div className="flex items-center justify-between mb-5">
                   <div className="flex items-center gap-2">
-                    <div
-                      className="w-1 h-5 rounded-full"
-                      style={{ background: "var(--brand-primary)" }}
-                    />
-                    <h2
-                      className="text-base font-semibold"
-                      style={{ color: "var(--text-primary)" }}
-                    >
-                      Case Studies
-                    </h2>
-                    <span
-                      className="text-xs px-2 py-0.5 rounded-full font-bold"
-                      style={{
-                        background: "var(--brand-soft)",
-                        color: "var(--brand-primary)",
-                      }}
-                    >
-                      50
-                    </span>
+                    <div className="w-1 h-5 rounded-full" style={{ background: "var(--brand-primary)" }} />
+                    <h2 className="text-base font-semibold" style={{ color: "var(--text-primary)" }}>Case Studies</h2>
+                    <span className="text-xs px-2 py-0.5 rounded-full font-bold" style={{ background: "var(--brand-soft)", color: "var(--brand-primary)" }}>50</span>
                   </div>
                   <button
                     onClick={() => setActiveNav("casestudies")}
@@ -695,7 +578,14 @@ export default function HomePage() {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {caseStudies.slice(0, 6).map((study) => (
-                    <CaseStudyCard key={study.id} study={study} />
+                    <CaseStudyCard
+                      key={study.id}
+                      study={study}
+                      isLoggedIn={!!user}
+                      initialSaved={savedIds.has(study.id)}
+                      initialLiked={likedIds.has(study.id)}
+                      onAuthRequired={() => setShowAuthModal(true)}
+                    />
                   ))}
                 </div>
               </div>
@@ -703,10 +593,7 @@ export default function HomePage() {
           ) : (
             <div className="p-6 pb-12">
               <div className="mb-6">
-                <h2
-                  className="text-xl font-bold"
-                  style={{ color: "var(--text-primary)" }}
-                >
+                <h2 className="text-xl font-bold" style={{ color: "var(--text-primary)" }}>
                   {searchQuery ? `Results for "${searchQuery}"` : activeFilter}
                 </h2>
                 <p className="text-sm mt-1" style={{ color: "var(--text-muted)" }}>
@@ -717,15 +604,8 @@ export default function HomePage() {
               {filteredBooks.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-20 text-center">
                   <BookOpen size={40} style={{ color: "var(--text-faint)" }} />
-                  <p
-                    className="text-base font-semibold mt-4"
-                    style={{ color: "var(--text-muted)" }}
-                  >
-                    No books found
-                  </p>
-                  <p className="text-sm mt-1" style={{ color: "var(--text-faint)" }}>
-                    Try a different search or category
-                  </p>
+                  <p className="text-base font-semibold mt-4" style={{ color: "var(--text-muted)" }}>No books found</p>
+                  <p className="text-sm mt-1" style={{ color: "var(--text-faint)" }}>Try a different search or category</p>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -734,7 +614,7 @@ export default function HomePage() {
                       <ResourceCard book={book} variant="list" />
                       <div className="mt-2">
                         <SaveButton
-                          book={book}
+                          resource={book}
                           isLoggedIn={!!user}
                           initialSaved={savedIds.has(book.id)}
                           initialLiked={likedIds.has(book.id)}
@@ -751,10 +631,7 @@ export default function HomePage() {
       </div>
 
       {showAuthModal && (
-        <AuthModal
-          onClose={() => setShowAuthModal(false)}
-          onSuccess={(u) => setUser(u)}
-        />
+        <AuthModal onClose={() => setShowAuthModal(false)} onSuccess={(u) => setUser(u)} />
       )}
     </div>
   );

@@ -2,10 +2,17 @@
 
 import { useState } from "react";
 import { Bookmark, Heart, Loader2 } from "lucide-react";
-import { Book } from "@/data/books";
+
+interface Resource {
+  id: string;
+  title: string;
+  author: string;
+  category: string;
+  link: string;
+}
 
 interface SaveButtonProps {
-  book: Book;
+  resource: Resource;
   isLoggedIn: boolean;
   initialSaved?: boolean;
   initialLiked?: boolean;
@@ -13,7 +20,7 @@ interface SaveButtonProps {
 }
 
 export function SaveButton({
-  book,
+  resource,
   isLoggedIn,
   initialSaved = false,
   initialLiked = false,
@@ -26,31 +33,21 @@ export function SaveButton({
 
   const handleSave = async (e: React.MouseEvent) => {
     e.stopPropagation();
-
-    if (!isLoggedIn) {
-      onAuthRequired();
-      return;
-    }
-
+    if (!isLoggedIn) { onAuthRequired(); return; }
     setSavingLoading(true);
-
     try {
-      const method = saved ? "DELETE" : "POST";
       const res = await fetch("/api/saved", {
-        method,
+        method: saved ? "DELETE" : "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          resourceId: book.id,
-          title: book.title,
-          author: book.author,
-          category: book.category,
-          link: book.link,
+          resourceId: resource.id,
+          title: resource.title,
+          author: resource.author,
+          category: resource.category,
+          link: resource.link,
         }),
       });
-
-      if (res.ok) {
-        setSaved(!saved);
-      }
+      if (res.ok) setSaved(!saved);
     } catch (error) {
       console.error("Save error:", error);
     } finally {
@@ -60,31 +57,21 @@ export function SaveButton({
 
   const handleLike = async (e: React.MouseEvent) => {
     e.stopPropagation();
-
-    if (!isLoggedIn) {
-      onAuthRequired();
-      return;
-    }
-
+    if (!isLoggedIn) { onAuthRequired(); return; }
     setLikingLoading(true);
-
     try {
-      const method = liked ? "DELETE" : "POST";
       const res = await fetch("/api/liked", {
-        method,
+        method: liked ? "DELETE" : "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          resourceId: book.id,
-          title: book.title,
-          author: book.author,
-          category: book.category,
-          link: book.link,
+          resourceId: resource.id,
+          title: resource.title,
+          author: resource.author,
+          category: resource.category,
+          link: resource.link,
         }),
       });
-
-      if (res.ok) {
-        setLiked(!liked);
-      }
+      if (res.ok) setLiked(!liked);
     } catch (error) {
       console.error("Like error:", error);
     } finally {
@@ -94,7 +81,6 @@ export function SaveButton({
 
   return (
     <div className="flex items-center gap-1.5">
-      {/* Save button */}
       <button
         onClick={handleSave}
         disabled={savingLoading}
@@ -102,24 +88,17 @@ export function SaveButton({
         style={{
           background: saved ? "var(--brand-primary)" : "var(--tag-bg)",
           color: saved ? "#ffffff" : "var(--text-muted)",
-          border: `1px solid ${
-            saved ? "var(--brand-primary)" : "var(--card-border)"
-          }`,
+          border: `1px solid ${saved ? "var(--brand-primary)" : "var(--card-border)"}`,
         }}
-        title={saved ? "Remove from saved" : "Save for later"}
       >
         {savingLoading ? (
           <Loader2 size={11} className="animate-spin" />
         ) : (
-          <Bookmark
-            size={11}
-            className={saved ? "fill-current" : ""}
-          />
+          <Bookmark size={11} className={saved ? "fill-current" : ""} />
         )}
         {saved ? "Saved" : "Save"}
       </button>
 
-      {/* Like button */}
       <button
         onClick={handleLike}
         disabled={likingLoading}
@@ -127,19 +106,13 @@ export function SaveButton({
         style={{
           background: liked ? "rgba(243,18,60,0.1)" : "var(--tag-bg)",
           color: liked ? "var(--brand-primary)" : "var(--text-muted)",
-          border: `1px solid ${
-            liked ? "rgba(243,18,60,0.3)" : "var(--card-border)"
-          }`,
+          border: `1px solid ${liked ? "rgba(243,18,60,0.3)" : "var(--card-border)"}`,
         }}
-        title={liked ? "Unlike" : "Like"}
       >
         {likingLoading ? (
           <Loader2 size={11} className="animate-spin" />
         ) : (
-          <Heart
-            size={11}
-            className={liked ? "fill-current" : ""}
-          />
+          <Heart size={11} className={liked ? "fill-current" : ""} />
         )}
         {liked ? "Liked" : "Like"}
       </button>
