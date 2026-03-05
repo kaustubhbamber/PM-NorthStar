@@ -19,7 +19,6 @@ import { SectionRow } from "@/components/SectionRow";
 import { HeroBanner } from "@/components/HeroBanner";
 import { CaseStudyCard } from "@/components/CaseStudyCard";
 import { AuthModal } from "@/components/AuthModal";
-import { SaveButton } from "@/components/SaveButton";
 import {
   BookOpen,
   Sparkles,
@@ -61,9 +60,7 @@ export default function HomePage() {
   useEffect(() => {
     fetch("/api/auth/me")
       .then((r) => r.json())
-      .then((data) => {
-        if (data.user) setUser(data.user);
-      })
+      .then((data) => { if (data.user) setUser(data.user); })
       .catch(() => {});
   }, []);
 
@@ -72,16 +69,12 @@ export default function HomePage() {
     fetch("/api/saved")
       .then((r) => r.json())
       .then((data) => {
-        if (data.saved) {
-          setSavedIds(new Set(data.saved.map((s: any) => s.resourceId)));
-        }
+        if (data.saved) setSavedIds(new Set(data.saved.map((s: any) => s.resourceId)));
       });
     fetch("/api/liked")
       .then((r) => r.json())
       .then((data) => {
-        if (data.liked) {
-          setLikedIds(new Set(data.liked.map((l: any) => l.resourceId)));
-        }
+        if (data.liked) setLikedIds(new Set(data.liked.map((l: any) => l.resourceId)));
       });
   }, [user]);
 
@@ -101,9 +94,7 @@ export default function HomePage() {
 
   const filteredBooks = useMemo(() => {
     let result = books;
-    if (activeFilter !== "All") {
-      result = result.filter((b) => b.category === activeFilter);
-    }
+    if (activeFilter !== "All") result = result.filter((b) => b.category === activeFilter);
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       result = result.filter(
@@ -127,9 +118,7 @@ export default function HomePage() {
 
   const csStats = useMemo(() => {
     const counts: Record<string, number> = {};
-    caseStudies.forEach((c) => {
-      counts[c.category] = (counts[c.category] || 0) + 1;
-    });
+    caseStudies.forEach((c) => { counts[c.category] = (counts[c.category] || 0) + 1; });
     return counts;
   }, []);
 
@@ -149,9 +138,7 @@ export default function HomePage() {
             style={{ background: "var(--nav-bg)", borderBottom: "1px solid var(--card-border)" }}
           >
             <div>
-              <h1 className="text-xl font-bold" style={{ color: "var(--text-primary)" }}>
-                My Library
-              </h1>
+              <h1 className="text-xl font-bold" style={{ color: "var(--text-primary)" }}>My Library</h1>
               <p className="text-xs mt-0.5" style={{ color: "var(--text-muted)" }}>
                 {savedBooks.length + savedStudies.length} saved · {likedBooks.length + likedStudies.length} liked
               </p>
@@ -186,9 +173,7 @@ export default function HomePage() {
                 <div className="mb-8">
                   <div className="flex items-center gap-2 mb-4">
                     <div className="w-1 h-5 rounded-full" style={{ background: "var(--brand-primary)" }} />
-                    <h2 className="text-base font-semibold" style={{ color: "var(--text-primary)" }}>
-                      Saved Books
-                    </h2>
+                    <h2 className="text-base font-semibold" style={{ color: "var(--text-primary)" }}>Saved Books</h2>
                     <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: "var(--brand-soft)", color: "var(--brand-primary)" }}>
                       {savedBooks.length}
                     </span>
@@ -198,18 +183,15 @@ export default function HomePage() {
                   ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                       {savedBooks.map((book) => (
-                        <div key={book.id}>
-                          <ResourceCard book={book} variant="list" />
-                          <div className="mt-2">
-                            <SaveButton
-                              resource={book}
-                              isLoggedIn={!!user}
-                              initialSaved={savedIds.has(book.id)}
-                              initialLiked={likedIds.has(book.id)}
-                              onAuthRequired={() => setShowAuthModal(true)}
-                            />
-                          </div>
-                        </div>
+                        <ResourceCard
+                          key={book.id}
+                          book={book}
+                          variant="list"
+                          isLoggedIn={!!user}
+                          initialSaved={savedIds.has(book.id)}
+                          initialLiked={likedIds.has(book.id)}
+                          onAuthRequired={() => setShowAuthModal(true)}
+                        />
                       ))}
                     </div>
                   )}
@@ -221,9 +203,7 @@ export default function HomePage() {
                 <div className="mb-8">
                   <div className="flex items-center gap-2 mb-4">
                     <div className="w-1 h-5 rounded-full" style={{ background: "var(--brand-primary)" }} />
-                    <h2 className="text-base font-semibold" style={{ color: "var(--text-primary)" }}>
-                      Saved Case Studies
-                    </h2>
+                    <h2 className="text-base font-semibold" style={{ color: "var(--text-primary)" }}>Saved Case Studies</h2>
                     <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: "var(--brand-soft)", color: "var(--brand-primary)" }}>
                       {savedStudies.length}
                     </span>
@@ -252,9 +232,7 @@ export default function HomePage() {
                 <div className="mb-8">
                   <div className="flex items-center gap-2 mb-4">
                     <div className="w-1 h-5 rounded-full" style={{ background: "var(--brand-primary)" }} />
-                    <h2 className="text-base font-semibold" style={{ color: "var(--text-primary)" }}>
-                      Liked Books
-                    </h2>
+                    <h2 className="text-base font-semibold" style={{ color: "var(--text-primary)" }}>Liked Books</h2>
                     <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: "var(--brand-soft)", color: "var(--brand-primary)" }}>
                       {likedBooks.length}
                     </span>
@@ -264,18 +242,15 @@ export default function HomePage() {
                   ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                       {likedBooks.map((book) => (
-                        <div key={book.id}>
-                          <ResourceCard book={book} variant="list" />
-                          <div className="mt-2">
-                            <SaveButton
-                              resource={book}
-                              isLoggedIn={!!user}
-                              initialSaved={savedIds.has(book.id)}
-                              initialLiked={likedIds.has(book.id)}
-                              onAuthRequired={() => setShowAuthModal(true)}
-                            />
-                          </div>
-                        </div>
+                        <ResourceCard
+                          key={book.id}
+                          book={book}
+                          variant="list"
+                          isLoggedIn={!!user}
+                          initialSaved={savedIds.has(book.id)}
+                          initialLiked={likedIds.has(book.id)}
+                          onAuthRequired={() => setShowAuthModal(true)}
+                        />
                       ))}
                     </div>
                   )}
@@ -287,9 +262,7 @@ export default function HomePage() {
                 <div>
                   <div className="flex items-center gap-2 mb-4">
                     <div className="w-1 h-5 rounded-full" style={{ background: "var(--brand-primary)" }} />
-                    <h2 className="text-base font-semibold" style={{ color: "var(--text-primary)" }}>
-                      Liked Case Studies
-                    </h2>
+                    <h2 className="text-base font-semibold" style={{ color: "var(--text-primary)" }}>Liked Case Studies</h2>
                     <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: "var(--brand-soft)", color: "var(--brand-primary)" }}>
                       {likedStudies.length}
                     </span>
@@ -315,7 +288,6 @@ export default function HomePage() {
             )}
           </main>
         </div>
-
         {showAuthModal && (
           <AuthModal onClose={() => setShowAuthModal(false)} onSuccess={(u) => setUser(u)} />
         )}
@@ -334,9 +306,7 @@ export default function HomePage() {
             style={{ background: "var(--nav-bg)", borderBottom: "1px solid var(--card-border)" }}
           >
             <div>
-              <h1 className="text-xl font-bold" style={{ color: "var(--text-primary)" }}>
-                Case Studies
-              </h1>
+              <h1 className="text-xl font-bold" style={{ color: "var(--text-primary)" }}>Case Studies</h1>
               <p className="text-xs mt-0.5" style={{ color: "var(--text-muted)" }}>
                 50 real stories — product wins, growth hacks, and failures
               </p>
@@ -413,7 +383,6 @@ export default function HomePage() {
             </div>
           </main>
         </div>
-
         {showAuthModal && (
           <AuthModal onClose={() => setShowAuthModal(false)} onSuccess={(u) => setUser(u)} />
         )}
@@ -425,7 +394,6 @@ export default function HomePage() {
   return (
     <div className="flex h-screen overflow-hidden" style={{ background: "var(--page-bg)" }}>
       <Sidebar activeNav={activeNav} onNavChange={setActiveNav} />
-
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         <TopNav
           activeFilter={activeFilter}
@@ -451,24 +419,21 @@ export default function HomePage() {
                 className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg"
                 style={{ background: "var(--brand-soft)", color: "var(--brand-primary)", border: "1px solid rgba(243,18,60,0.2)" }}
               >
-                <Bookmark size={11} />
-                {savedIds.size} Saved
+                <Bookmark size={11} /> {savedIds.size} Saved
               </button>
               <button
                 onClick={() => setActiveNav("saved")}
                 className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg"
                 style={{ background: "var(--brand-soft)", color: "var(--brand-primary)", border: "1px solid rgba(243,18,60,0.2)" }}
               >
-                <Heart size={11} />
-                {likedIds.size} Liked
+                <Heart size={11} /> {likedIds.size} Liked
               </button>
               <button
                 onClick={handleLogout}
                 className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg"
                 style={{ background: "var(--tag-bg)", color: "var(--text-muted)", border: "1px solid var(--card-border)" }}
               >
-                <LogOut size={11} />
-                Log Out
+                <LogOut size={11} /> Log Out
               </button>
             </div>
           ) : (
@@ -477,8 +442,7 @@ export default function HomePage() {
               className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg font-semibold text-white"
               style={{ background: "var(--brand-primary)" }}
             >
-              <User size={11} />
-              Log In / Sign Up
+              <User size={11} /> Log In / Sign Up
             </button>
           )}
         </div>
@@ -486,7 +450,7 @@ export default function HomePage() {
         <main className="flex-1 overflow-y-auto scroll-container">
           {!isFiltered ? (
             <div className="pb-12">
-              {heroBook && <HeroBanner onNavChange={setActiveNav} />}
+              {heroBook && <HeroBanner book={heroBook} />}
 
               {/* Stats Strip */}
               <div className="flex gap-4 mx-6 mt-4 mb-6">
@@ -517,18 +481,15 @@ export default function HomePage() {
               {/* Featured Row */}
               <SectionRow title="Latest Picks" subtitle="Hand-curated for product leaders" accentColor="var(--brand-primary)">
                 {featured.map((book) => (
-                  <div key={book.id} style={{ scrollSnapAlign: "start" }}>
-                    <ResourceCard book={book} variant="featured" />
-                    <div className="mt-2 px-1">
-                      <SaveButton
-                        resource={book}
-                        isLoggedIn={!!user}
-                        initialSaved={savedIds.has(book.id)}
-                        initialLiked={likedIds.has(book.id)}
-                        onAuthRequired={() => setShowAuthModal(true)}
-                      />
-                    </div>
-                  </div>
+                  <ResourceCard
+                    key={book.id}
+                    book={book}
+                    variant="featured"
+                    isLoggedIn={!!user}
+                    initialSaved={savedIds.has(book.id)}
+                    initialLiked={likedIds.has(book.id)}
+                    onAuthRequired={() => setShowAuthModal(true)}
+                  />
                 ))}
               </SectionRow>
 
@@ -541,18 +502,15 @@ export default function HomePage() {
                   <div key={cat} className="mt-8">
                     <SectionRow title={cat} subtitle={`${catBooks.length} essential books`} accentColor={categoryAccents[cat]}>
                       {catBooks.map((book) => (
-                        <div key={book.id} style={{ scrollSnapAlign: "start" }}>
-                          <ResourceCard book={book} variant="default" />
-                          <div className="mt-2 px-1">
-                            <SaveButton
-                              resource={book}
-                              isLoggedIn={!!user}
-                              initialSaved={savedIds.has(book.id)}
-                              initialLiked={likedIds.has(book.id)}
-                              onAuthRequired={() => setShowAuthModal(true)}
-                            />
-                          </div>
-                        </div>
+                        <ResourceCard
+                          key={book.id}
+                          book={book}
+                          variant="default"
+                          isLoggedIn={!!user}
+                          initialSaved={savedIds.has(book.id)}
+                          initialLiked={likedIds.has(book.id)}
+                          onAuthRequired={() => setShowAuthModal(true)}
+                        />
                       ))}
                     </SectionRow>
                     <div className="section-divider mt-8" />
@@ -600,7 +558,6 @@ export default function HomePage() {
                   {filteredBooks.length} book{filteredBooks.length !== 1 ? "s" : ""} found
                 </p>
               </div>
-
               {filteredBooks.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-20 text-center">
                   <BookOpen size={40} style={{ color: "var(--text-faint)" }} />
@@ -610,18 +567,15 @@ export default function HomePage() {
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                   {filteredBooks.map((book) => (
-                    <div key={book.id}>
-                      <ResourceCard book={book} variant="list" />
-                      <div className="mt-2">
-                        <SaveButton
-                          resource={book}
-                          isLoggedIn={!!user}
-                          initialSaved={savedIds.has(book.id)}
-                          initialLiked={likedIds.has(book.id)}
-                          onAuthRequired={() => setShowAuthModal(true)}
-                        />
-                      </div>
-                    </div>
+                    <ResourceCard
+                      key={book.id}
+                      book={book}
+                      variant="list"
+                      isLoggedIn={!!user}
+                      initialSaved={savedIds.has(book.id)}
+                      initialLiked={likedIds.has(book.id)}
+                      onAuthRequired={() => setShowAuthModal(true)}
+                    />
                   ))}
                 </div>
               )}
