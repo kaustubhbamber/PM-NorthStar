@@ -498,12 +498,13 @@ export default function HomePage() {
                 ))}
               </div>
 
-              {/* Featured Row */}
+              {/* Featured Row — UPDATED */}
               <SectionRow title="Latest Picks" subtitle="Hand-curated for product leaders" accentColor="var(--brand-primary)">
-                {featured.map((book) => (
+                {featured.map((book, index) => (
                   <ResourceCard
                     key={book.id}
                     book={book}
+                    index={index}
                     variant="featured"
                     isLoggedIn={!!user}
                     initialSaved={savedIds.has(book.id)}
@@ -515,16 +516,17 @@ export default function HomePage() {
 
               <div className="section-divider my-8" />
 
-              {/* Per-Category Rows */}
+              {/* Per-Category Rows — UPDATED */}
               {categories.map((cat) => {
                 const catBooks = books.filter((b) => b.category === cat);
                 return (
                   <div key={cat} className="mt-8">
                     <SectionRow title={cat} subtitle={`${catBooks.length} essential books`} accentColor={categoryAccents[cat]}>
-                      {catBooks.map((book) => (
+                      {catBooks.map((book, index) => (
                         <ResourceCard
                           key={book.id}
                           book={book}
+                          index={index}
                           variant="default"
                           isLoggedIn={!!user}
                           initialSaved={savedIds.has(book.id)}
@@ -586,10 +588,12 @@ export default function HomePage() {
                 </div>
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                  {filteredBooks.map((book) => (
+                  {/* Filtered results — UPDATED */}
+                  {filteredBooks.map((book, index) => (
                     <ResourceCard
                       key={book.id}
                       book={book}
+                      index={index}
                       variant="list"
                       isLoggedIn={!!user}
                       initialSaved={savedIds.has(book.id)}
