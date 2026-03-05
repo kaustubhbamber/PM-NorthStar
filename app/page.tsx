@@ -124,10 +124,12 @@ export default function HomePage() {
 
   // ── Saved Library View ─────────────────────────────────────────────────
   if (activeNav === "saved") {
-    const savedBooks = books.filter((b) => savedIds.has(b.id));
-    const likedBooks = books.filter((b) => likedIds.has(b.id));
-    const savedStudies = caseStudies.filter((s) => savedIds.has(s.id));
-    const likedStudies = caseStudies.filter((s) => likedIds.has(s.id));
+    // Saved = saved but NOT liked
+    const savedBooks = books.filter((b) => savedIds.has(b.id) && !likedIds.has(b.id));
+    const savedStudies = caseStudies.filter((s) => savedIds.has(s.id) && !likedIds.has(s.id));
+    // Favourites = liked (regardless of saved)
+    const favouriteBooks = books.filter((b) => likedIds.has(b.id));
+    const favouriteStudies = caseStudies.filter((s) => likedIds.has(s.id));
 
     return (
       <div className="flex h-screen overflow-hidden" style={{ background: "var(--page-bg)" }}>
@@ -140,7 +142,7 @@ export default function HomePage() {
             <div>
               <h1 className="text-xl font-bold" style={{ color: "var(--text-primary)" }}>My Library</h1>
               <p className="text-xs mt-0.5" style={{ color: "var(--text-muted)" }}>
-                {savedBooks.length + savedStudies.length} saved · {likedBooks.length + likedStudies.length} liked
+                {savedBooks.length + savedStudies.length} saved for later · {favouriteBooks.length + favouriteStudies.length} favourites
               </p>
             </div>
             <button
@@ -169,120 +171,132 @@ export default function HomePage() {
               </div>
             ) : (
               <>
-                {/* Saved Books */}
-                <div className="mb-8">
-                  <div className="flex items-center gap-2 mb-4">
-                    <div className="w-1 h-5 rounded-full" style={{ background: "var(--brand-primary)" }} />
-                    <h2 className="text-base font-semibold" style={{ color: "var(--text-primary)" }}>Saved Books</h2>
+                {/* ── Saved for Later ── */}
+                <div className="mb-2">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Bookmark size={16} style={{ color: "var(--brand-primary)" }} />
+                    <h2 className="text-lg font-bold" style={{ color: "var(--text-primary)" }}>
+                      Saved for Later
+                    </h2>
                     <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: "var(--brand-soft)", color: "var(--brand-primary)" }}>
-                      {savedBooks.length}
+                      {savedBooks.length + savedStudies.length}
                     </span>
                   </div>
-                  {savedBooks.length === 0 ? (
-                    <p className="text-sm" style={{ color: "var(--text-faint)" }}>No saved books yet.</p>
-                  ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                      {savedBooks.map((book) => (
-                        <ResourceCard
-                          key={book.id}
-                          book={book}
-                          variant="list"
-                          isLoggedIn={!!user}
-                          initialSaved={savedIds.has(book.id)}
-                          initialLiked={likedIds.has(book.id)}
-                          onAuthRequired={() => setShowAuthModal(true)}
-                        />
-                      ))}
-                    </div>
-                  )}
-                </div>
+                  <p className="text-xs mb-5" style={{ color: "var(--text-muted)" }}>
+                    Books and case studies you want to read later
+                  </p>
 
-                <div className="section-divider my-6" />
-
-                {/* Saved Case Studies */}
-                <div className="mb-8">
-                  <div className="flex items-center gap-2 mb-4">
-                    <div className="w-1 h-5 rounded-full" style={{ background: "var(--brand-primary)" }} />
-                    <h2 className="text-base font-semibold" style={{ color: "var(--text-primary)" }}>Saved Case Studies</h2>
-                    <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: "var(--brand-soft)", color: "var(--brand-primary)" }}>
-                      {savedStudies.length}
-                    </span>
+                  {/* Saved Books */}
+                  <div className="mb-6">
+                    <p className="text-xs font-semibold uppercase tracking-wide mb-3" style={{ color: "var(--text-faint)" }}>
+                      Books
+                    </p>
+                    {savedBooks.length === 0 ? (
+                      <p className="text-sm" style={{ color: "var(--text-faint)" }}>No saved books yet.</p>
+                    ) : (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                        {savedBooks.map((book) => (
+                          <ResourceCard
+                            key={book.id}
+                            book={book}
+                            variant="list"
+                            isLoggedIn={!!user}
+                            initialSaved={savedIds.has(book.id)}
+                            initialLiked={likedIds.has(book.id)}
+                            onAuthRequired={() => setShowAuthModal(true)}
+                          />
+                        ))}
+                      </div>
+                    )}
                   </div>
-                  {savedStudies.length === 0 ? (
-                    <p className="text-sm" style={{ color: "var(--text-faint)" }}>No saved case studies yet.</p>
-                  ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {savedStudies.map((study) => (
-                        <CaseStudyCard
-                          key={study.id}
-                          study={study}
-                          isLoggedIn={!!user}
-                          initialSaved={savedIds.has(study.id)}
-                          initialLiked={likedIds.has(study.id)}
-                          onAuthRequired={() => setShowAuthModal(true)}
-                        />
-                      ))}
-                    </div>
-                  )}
-                </div>
 
-                <div className="section-divider my-6" />
-
-                {/* Liked Books */}
-                <div className="mb-8">
-                  <div className="flex items-center gap-2 mb-4">
-                    <div className="w-1 h-5 rounded-full" style={{ background: "var(--brand-primary)" }} />
-                    <h2 className="text-base font-semibold" style={{ color: "var(--text-primary)" }}>Liked Books</h2>
-                    <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: "var(--brand-soft)", color: "var(--brand-primary)" }}>
-                      {likedBooks.length}
-                    </span>
+                  {/* Saved Case Studies */}
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-wide mb-3" style={{ color: "var(--text-faint)" }}>
+                      Case Studies
+                    </p>
+                    {savedStudies.length === 0 ? (
+                      <p className="text-sm" style={{ color: "var(--text-faint)" }}>No saved case studies yet.</p>
+                    ) : (
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {savedStudies.map((study) => (
+                          <CaseStudyCard
+                            key={study.id}
+                            study={study}
+                            isLoggedIn={!!user}
+                            initialSaved={savedIds.has(study.id)}
+                            initialLiked={likedIds.has(study.id)}
+                            onAuthRequired={() => setShowAuthModal(true)}
+                          />
+                        ))}
+                      </div>
+                    )}
                   </div>
-                  {likedBooks.length === 0 ? (
-                    <p className="text-sm" style={{ color: "var(--text-faint)" }}>No liked books yet.</p>
-                  ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                      {likedBooks.map((book) => (
-                        <ResourceCard
-                          key={book.id}
-                          book={book}
-                          variant="list"
-                          isLoggedIn={!!user}
-                          initialSaved={savedIds.has(book.id)}
-                          initialLiked={likedIds.has(book.id)}
-                          onAuthRequired={() => setShowAuthModal(true)}
-                        />
-                      ))}
-                    </div>
-                  )}
                 </div>
 
-                <div className="section-divider my-6" />
+                <div className="section-divider my-8" />
 
-                {/* Liked Case Studies */}
+                {/* ── Favourites ── */}
                 <div>
-                  <div className="flex items-center gap-2 mb-4">
-                    <div className="w-1 h-5 rounded-full" style={{ background: "var(--brand-primary)" }} />
-                    <h2 className="text-base font-semibold" style={{ color: "var(--text-primary)" }}>Liked Case Studies</h2>
+                  <div className="flex items-center gap-2 mb-1">
+                    <Heart size={16} style={{ color: "var(--brand-primary)" }} className="fill-current" />
+                    <h2 className="text-lg font-bold" style={{ color: "var(--text-primary)" }}>
+                      Favourites
+                    </h2>
                     <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: "var(--brand-soft)", color: "var(--brand-primary)" }}>
-                      {likedStudies.length}
+                      {favouriteBooks.length + favouriteStudies.length}
                     </span>
                   </div>
-                  {likedStudies.length === 0 ? (
-                    <p className="text-sm" style={{ color: "var(--text-faint)" }}>No liked case studies yet.</p>
-                  ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {likedStudies.map((study) => (
-                        <CaseStudyCard
-                          key={study.id}
-                          study={study}
-                          isLoggedIn={!!user}
-                          initialSaved={savedIds.has(study.id)}
-                          initialLiked={likedIds.has(study.id)}
-                          onAuthRequired={() => setShowAuthModal(true)}
-                        />
-                      ))}
-                    </div>
-                  )}
+                  <p className="text-xs mb-5" style={{ color: "var(--text-muted)" }}>
+                    Books and case studies you loved
+                  </p>
+
+                  {/* Favourite Books */}
+                  <div className="mb-6">
+                    <p className="text-xs font-semibold uppercase tracking-wide mb-3" style={{ color: "var(--text-faint)" }}>
+                      Books
+                    </p>
+                    {favouriteBooks.length === 0 ? (
+                      <p className="text-sm" style={{ color: "var(--text-faint)" }}>No favourite books yet. Hit ❤️ on any book!</p>
+                    ) : (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                        {favouriteBooks.map((book) => (
+                          <ResourceCard
+                            key={book.id}
+                            book={book}
+                            variant="list"
+                            isLoggedIn={!!user}
+                            initialSaved={savedIds.has(book.id)}
+                            initialLiked={likedIds.has(book.id)}
+                            onAuthRequired={() => setShowAuthModal(true)}
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Favourite Case Studies */}
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-wide mb-3" style={{ color: "var(--text-faint)" }}>
+                      Case Studies
+                    </p>
+                    {favouriteStudies.length === 0 ? (
+                      <p className="text-sm" style={{ color: "var(--text-faint)" }}>No favourite case studies yet. Hit ❤️ on any case study!</p>
+                    ) : (
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {favouriteStudies.map((study) => (
+                          <CaseStudyCard
+                            key={study.id}
+                            study={study}
+                            isLoggedIn={!!user}
+                            initialSaved={savedIds.has(study.id)}
+                            initialLiked={likedIds.has(study.id)}
+                            onAuthRequired={() => setShowAuthModal(true)}
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
               </>
             )}
@@ -426,7 +440,7 @@ export default function HomePage() {
                 className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg"
                 style={{ background: "var(--brand-soft)", color: "var(--brand-primary)", border: "1px solid rgba(243,18,60,0.2)" }}
               >
-                <Heart size={11} /> {likedIds.size} Liked
+                <Heart size={11} /> {likedIds.size} Favourites
               </button>
               <button
                 onClick={handleLogout}
