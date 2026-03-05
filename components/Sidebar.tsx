@@ -46,16 +46,7 @@ export function Sidebar({ activeNav, onNavChange, savedCount = 0, favouriteCount
         {navItems.map(({ id, label, icon: Icon }) => (
           <button
             key={id}
-            onClick={() => {
-              if (id === "library") {
-                onNavChange(id);
-                setTimeout(() => {
-                  document.getElementById("latest-picks")?.scrollIntoView({ behavior: "smooth" });
-                }, 50);
-              } else {
-                onNavChange(id);
-              }
-            }}
+            onClick={() => onNavChange(id)}
             className={`nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium ${activeNav === id ? "active" : ""}`}
             style={{ color: activeNav === id ? "var(--brand-primary)" : "var(--text-muted)" }}
           >
@@ -102,6 +93,7 @@ export function Sidebar({ activeNav, onNavChange, savedCount = 0, favouriteCount
               </span>
             )}
           </button>
+
           <button
             onClick={() => onNavChange("favourites")}
             className={`nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium ${activeNav === "favourites" ? "active" : ""}`}
