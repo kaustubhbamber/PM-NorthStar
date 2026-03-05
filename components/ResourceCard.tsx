@@ -7,6 +7,7 @@ import { SaveButton } from "@/components/SaveButton";
 
 interface ResourceCardProps {
   book: Book;
+  index?: number;
   variant?: "default" | "featured" | "list" | "case-study";
   isLoggedIn?: boolean;
   initialSaved?: boolean;
@@ -16,6 +17,7 @@ interface ResourceCardProps {
 
 export function ResourceCard({
   book,
+  index = 0,
   variant = "default",
   isLoggedIn = false,
   initialSaved = false,
@@ -23,6 +25,9 @@ export function ResourceCard({
   onAuthRequired = () => {},
 }: ResourceCardProps) {
   const [hovered, setHovered] = useState(false);
+
+  const cardColors = ["#E8192C", "#16A34A", "#2563EB"];
+  const cardColor = cardColors[index % 3];
 
   if (variant === "list") {
     return (
@@ -37,10 +42,10 @@ export function ResourceCard({
           className="flex items-center gap-3 p-3 cursor-pointer group"
           onClick={() => window.open(book.link, "_blank", "noopener,noreferrer")}
         >
-          {/* Red block */}
+          {/* Alternating color block */}
           <div
             className="w-10 h-12 rounded-lg flex-shrink-0 flex items-center justify-center"
-            style={{ background: "var(--brand-primary)" }}
+            style={{ background: cardColor }}
           >
             <span className="text-white text-xs font-bold text-center leading-tight px-1">
               {book.title.split(" ")[0].slice(0, 3).toUpperCase()}
@@ -94,10 +99,10 @@ export function ResourceCard({
           border: "1px solid var(--card-border)",
         }}
       >
-        {/* Red tile */}
+        {/* Alternating color tile */}
         <div
           className="relative cursor-pointer"
-          style={{ height: "140px", background: "var(--brand-primary)" }}
+          style={{ height: "140px", background: cardColor }}
           onClick={() => window.open(book.link, "_blank", "noopener,noreferrer")}
           onMouseEnter={() => setHovered(true)}
           onMouseLeave={() => setHovered(false)}
@@ -152,9 +157,10 @@ export function ResourceCard({
         border: "1px solid var(--card-border)",
       }}
     >
+      {/* Alternating color tile */}
       <div
         className="relative cursor-pointer"
-        style={{ height: "110px", background: "var(--brand-primary)" }}
+        style={{ height: "110px", background: cardColor }}
         onClick={() => window.open(book.link, "_blank", "noopener,noreferrer")}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
